@@ -1,15 +1,23 @@
 # fsm
 Finite-state machine in go
 
-## Introduction
-
 * [![Build Status](https://travis-ci.org/go-trellis/fsm.png)](https://travis-ci.org/go-trellis/fsm)
 * [![GoDoc](http://godoc.org/github.com/go-trellis/fsm?status.svg)](http://godoc.org/github.com/go-trellis/fsm)
 
+## Introduction
 
 * [点击进入中文相关说明](http://zh.wikipedia.org/wiki/%E6%9C%89%E9%99%90%E7%8A%B6%E6%80%81%E6%9C%BA)
 * [Click to article in English](http://en.wikipedia.org/wiki/Finite-state_machine)
 
+## Feature
+
+* Supports add transactions from configure file
+
+## Installation
+
+```golang
+go get -u github.com/go-trellis/fsm
+```
 
 ## Usage
 

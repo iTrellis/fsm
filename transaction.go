@@ -4,6 +4,7 @@
 
 package fsm
 
+// Transaction information for current to target status in namespace
 type Transaction struct {
 	Namespace     string
 	CurrentStatus string
