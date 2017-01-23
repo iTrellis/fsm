@@ -5,14 +5,10 @@
 package fsm
 
 import (
-	"github.com/go-rut/errors"
-)
-
-const (
-	namespace = "Trellis::FSM"
+	"errors"
 )
 
 var (
-	ErrInvalidTransaction = errors.TN(namespace, 1000, "invalid transaction")
-	ErrTargetStatusEmpty  = errors.TN(namespace, 1001, "empty target status")
+	ErrInvalidTransaction = errors.New("invalid transaction")
+	ErrTargetStatusEmpty  = errors.New("empty target status")
 )

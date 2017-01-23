@@ -19,7 +19,7 @@ func (p *Transaction) valid() error {
 	}
 
 	if p.TargetStatus == "" {
-		return ErrTargetStatusEmpty.New()
+		return ErrTargetStatusEmpty
 	}
 
 	return nil
@@ -28,13 +28,13 @@ func (p *Transaction) valid() error {
 func (p *Transaction) validCurrent() error {
 
 	if p == nil {
-		return ErrInvalidTransaction.New()
+		return ErrInvalidTransaction
 	}
 
 	if p.Namespace == "" ||
 		p.Event == "" ||
 		p.CurrentStatus == "" {
-		return ErrInvalidTransaction.New()
+		return ErrInvalidTransaction
 	}
 	return nil
 }
