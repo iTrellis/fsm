@@ -9,13 +9,9 @@ Finite-state machine in go
 * [点击进入中文相关说明](http://zh.wikipedia.org/wiki/%E6%9C%89%E9%99%90%E7%8A%B6%E6%80%81%E6%9C%BA)
 * [Click to article in English](http://en.wikipedia.org/wiki/Finite-state_machine)
 
-## Feature
-
-* Supports add transactions from configure file
-
 ## Installation
 
-```golang
+```go
 go get -u github.com/go-trellis/fsm
 ```
 
@@ -23,7 +19,7 @@ go get -u github.com/go-trellis/fsm
 
 ### fsm repo
 
-```golang
+```go
 // FSMRepo the functions of fsm interface
 type FSMRepo interface {
 	// add a transction into cache
@@ -41,7 +37,7 @@ type FSMRepo interface {
 
 ### new and input a namespace's transaction
 
-```golang
+```go
 	f := fsm.New()
 
 	f.Add(&fsm.Transaction{
@@ -56,3 +52,7 @@ type FSMRepo interface {
 
 	fmt.Println(f.GetTargetTranstion("namespace", "status1", "event1"))
 ```
+
+## TODO
+
+* Supports add transactions from configure file
