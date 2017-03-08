@@ -53,6 +53,6 @@ type FSMRepo interface {
 	fmt.Println(f.GetTargetTranstion("namespace", "status1", "event1"))
 ```
 
-## TODO
+## Config
 
-* Supports add transactions from configure file
+* add transactions from configure file: https://github.com/go-trellis/config
