@@ -8,6 +8,7 @@ import (
 	"errors"
 )
 
+// errors
 var (
 	ErrInvalidTransaction = errors.New("invalid transaction")
 	ErrTargetStatusEmpty  = errors.New("empty target status")

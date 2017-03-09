@@ -4,8 +4,8 @@
 
 package fsm
 
-// FSMRepo the functions of fsm interface
-type FSMRepo interface {
+// Repo the functions of fsm interface
+type Repo interface {
 	// add a transction into cache
 	Add(*Transaction)
 	// remove all transactions

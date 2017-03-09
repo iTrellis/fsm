@@ -17,7 +17,7 @@ type fsm struct {
 var defaultFSM *fsm
 
 // New get default fsm
-func New() FSMRepo {
+func New() Repo {
 	if defaultFSM == nil {
 		defaultFSM = &fsm{
 			Transations: make(map[string]map[string]*Transaction, 0),
