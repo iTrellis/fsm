@@ -55,4 +55,4 @@ type FSMRepo interface {
 
 ## Config
 
-* add transactions from configure file: https://github.com/go-trellis/config
+* [sample.conf](sample.conf)
