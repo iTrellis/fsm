@@ -13,7 +13,7 @@ func NewTransactionFromConfig(filepath string) error {
 }
 
 // NewTransactions new transactions
-func NewTransactions(cfg *config.Config) (err error) {
+func NewTransactions(cfg config.Configuration) (err error) {
 	f := New()
 	fsmConfig := cfg.GetConfig("fsm")
 	for _, namespace := range fsmConfig.Keys() {
