@@ -14,6 +14,8 @@ import (
 const (
 	namespace  = "namespace1"
 	namespace2 = "namespace2"
+	namespace3 = "namespace3"
+	namespace4 = "namespace4"
 )
 
 func TestFSM(t *testing.T) {
@@ -124,12 +126,36 @@ func TestFSM(t *testing.T) {
 				So(tran.TargetStatus, ShouldEqual, "status3")
 			})
 		})
+		Convey("add trans from config", func() {
+			err := fsm.NewTransactionFromConfig("sample.conf")
+			So(err, ShouldBeNil)
+			Convey("check trans", func() {
+				tran := fsm.New().GetTargetTranstion(namespace3, "status1", "event1")
+				So(tran, ShouldNotBeNil)
+				So(tran.TargetStatus, ShouldEqual, "target1")
+				tran = fsm.New().GetTargetTranstion(namespace3, "status1", "event2")
+				So(tran, ShouldNotBeNil)
+				So(tran.TargetStatus, ShouldEqual, "target2")
+				tran = fsm.New().GetTargetTranstion(namespace3, "status1", "event3")
+				So(tran, ShouldBeNil)
+				tran = fsm.New().GetTargetTranstion(namespace4, "status1", "event1")
+				So(tran, ShouldNotBeNil)
+				So(tran.TargetStatus, ShouldEqual, "target1")
+				tran = fsm.New().GetTargetTranstion(namespace4, "status1", "event2")
+				So(tran, ShouldBeNil)
+			})
+		})
+
 		Convey("remove all transaction", func() {
 			f.Remove()
 			Convey("when get nil", func() {
 				tran := fsm.New().GetTargetTranstion(namespace, "status1", "event1")
 				So(tran, ShouldBeNil)
 				tran = fsm.New().GetTargetTranstion(namespace2, "status1", "event1")
+				So(tran, ShouldBeNil)
+				tran = fsm.New().GetTargetTranstion(namespace3, "status1", "event1")
+				So(tran, ShouldBeNil)
+				tran = fsm.New().GetTargetTranstion(namespace4, "status1", "event1")
 				So(tran, ShouldBeNil)
 			})
 		})

@@ -6,10 +6,10 @@ package fsm
 
 // Transaction information for current to target status in namespace
 type Transaction struct {
-	Namespace     string
-	CurrentStatus string
-	Event         string
-	TargetStatus  string
+	Namespace     string `json:"namespace"`
+	CurrentStatus string `json:"current"`
+	Event         string `json:"event"`
+	TargetStatus  string `json:"target"`
 }
 
 func (p *Transaction) valid() error {
