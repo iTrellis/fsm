@@ -1,5 +1,7 @@
 github.com/go-akka/configuration v0.0.0-20190109144621-439b15a79294 h1:ZERecv3t4Wm0FDHw7evoTBJLFl/j092rEF4D1AoRIKY=
 github.com/go-akka/configuration v0.0.0-20190109144621-439b15a79294/go.mod h1:19bUnum2ZAeftfwwLZ/wRe7idyfoW2MfmXO464Hrfbw=
+github.com/gogap/config v0.0.0-20180418140818-a1522129698c h1:oVHVSEbuanJ2BEjyLUlopElV06URa2mvT1oQSnu7zPI=
+github.com/gogap/config v0.0.0-20180418140818-a1522129698c/go.mod h1:oBHg+chXMdjU9A6Dfj0vg/1ir/isLEGXftHwj70ZsV8=
 github.com/gopherjs/gopherjs v0.0.0-20181017120253-0766667cb4d1 h1:EGx4pi6eqNxGaHF6qqu48+N2wcFQ5qg5FXgOdqsJ5d8=
 github.com/gopherjs/gopherjs v0.0.0-20181017120253-0766667cb4d1/go.mod h1:wJfORRmW1u3UXTncJ5qlYoELFm8eSnnEO6hX4iZ3EWY=
 github.com/jtolds/gls v4.20.0+incompatible h1:xdiiI2gbIgH/gLH7ADydsJ1uDOEzR8yvV7C0MuV77Wo=

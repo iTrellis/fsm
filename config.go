@@ -1,26 +1,30 @@
+// GNU GPL v3 License
+// Copyright (c) 2016 github.com:go-trellis
+
 package fsm
 
 import (
-	"github.com/go-akka/configuration"
+	"github.com/gogap/config"
 )
 
-// NewTransactionFromConfig var loggers map[string]LoggerWriter
+// NewTransactionFromConfig new transactions from config file
 func NewTransactionFromConfig(filepath string) error {
-	return NewTransactions(configuration.LoadConfig(filepath))
+	return NewTransactions(config.NewConfig(config.ConfigFile(filepath)))
 }
 
-// NewTransactions var loggers map[string]LoggerWriter
-func NewTransactions(cfg *configuration.Config) (err error) {
+// NewTransactions new transactions
+func NewTransactions(cfg *config.Config) (err error) {
 	f := New()
-	for _, namespace := range cfg.GetNode("fsm").GetObject().GetKeys() {
-		namespaceConfig := cfg.GetValue("fsm." + namespace)
-		for _, v := range namespaceConfig.GetArray() {
-			obj := v.GetObject()
+	fsmConfig := cfg.GetConfig("fsm")
+	for _, namespace := range fsmConfig.Keys() {
+		nsConfig := fsmConfig.GetConfig(namespace)
+		for _, key := range nsConfig.Keys() {
+			obj := nsConfig.GetConfig(key)
 			f.Add(&Transaction{
 				Namespace:     namespace,
-				CurrentStatus: obj.GetKey("current").GetString(),
-				Event:         obj.GetKey("event").GetString(),
-				TargetStatus:  obj.GetKey("target").GetString(),
+				CurrentStatus: obj.GetString("current"),
+				Event:         obj.GetString("event"),
+				TargetStatus:  obj.GetString("target"),
 			})
 		}
 	}
