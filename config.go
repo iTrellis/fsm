@@ -4,22 +4,26 @@
 package fsm
 
 import (
-	"github.com/gogap/config"
+	"github.com/go-trellis/config"
 )
 
 // NewTransactionFromConfig new transactions from config file
 func NewTransactionFromConfig(filepath string) error {
-	return NewTransactions(config.NewConfig(config.ConfigFile(filepath)))
+	cfg, err := config.NewConfigOptions(config.OptionFile(filepath))
+	if err != nil {
+		return err
+	}
+	return NewTransactions(cfg)
 }
 
 // NewTransactions new transactions
-func NewTransactions(cfg config.Configuration) (err error) {
+func NewTransactions(cfg config.Config) (err error) {
 	f := New()
-	fsmConfig := cfg.GetConfig("fsm")
-	for _, namespace := range fsmConfig.Keys() {
-		nsConfig := fsmConfig.GetConfig(namespace)
-		for _, key := range nsConfig.Keys() {
-			obj := nsConfig.GetConfig(key)
+	fsmConfig := cfg.GetValuesConfig("fsm")
+	for _, namespace := range fsmConfig.GetKeys() {
+		nsConfig := fsmConfig.GetValuesConfig(namespace)
+		for _, key := range nsConfig.GetKeys() {
+			obj := nsConfig.GetValuesConfig(key)
 			f.Add(&Transaction{
 				Namespace:     namespace,
 				CurrentStatus: obj.GetString("current"),

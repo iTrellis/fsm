@@ -1,0 +1,18 @@
+# GNU GPL v3 License
+# Copyright (c) 2016 github.com:go-trellis
+
+fsm:
+    namespace3:
+        trans1:
+            current: status1
+            event: event1
+            target: target1
+        trans2:
+            current: status1
+            event: event2
+            target: target2
+    namespace4:
+        trans3:
+            current: status1
+            event: event1
+            target: target1

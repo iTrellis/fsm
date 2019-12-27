@@ -126,7 +126,7 @@ func TestFSM(t *testing.T) {
 			})
 		})
 		Convey("add trans from config", func() {
-			err := fsm.NewTransactionFromConfig("sample.conf")
+			err := fsm.NewTransactionFromConfig("sample.yaml")
 			So(err, ShouldBeNil)
 			Convey("check trans", func() {
 				tran := fsm.New().GetTargetTranstion(namespace3, "status1", "event1")
