@@ -19,7 +19,7 @@ var defaultFSM *fsm
 func New() Repo {
 	if defaultFSM == nil {
 		defaultFSM = &fsm{
-			Transations: make(map[string]map[string]*Transaction, 0),
+			Transations: make(map[string]map[string]*Transaction),
 		}
 	}
 	return defaultFSM
@@ -63,7 +63,7 @@ func (p *fsm) Remove() {
 }
 
 func (p *fsm) remove() {
-	p.Transations = make(map[string]map[string]*Transaction, 0)
+	p.Transations = make(map[string]map[string]*Transaction)
 }
 
 // RemoveNamespace remove namespace's transactions
