@@ -5,8 +5,6 @@ github.com/go-playground/locales v0.13.0/go.mod h1:taPMhCMXrRLJO55olJkUXHZBHCxTM
 github.com/go-playground/universal-translator v0.17.0/go.mod h1:UkSxE5sNxxRwHyU+Scu5vgOQjsIJAF8j9muTVoKLVtA=
 github.com/go-trellis/common v1.6.1 h1:akeWbbjvGcV7r6eL1uwbNYVOvp1f0RGvIWBqmCZMNus=
 github.com/go-trellis/common v1.6.1/go.mod h1:CThhzqBxHnNI8gea5nRZa/IhGv06W+EGqb8GE7Y3O2A=
-github.com/go-trellis/config v1.4.1 h1:Whjptqe+GaivAkT0Uyaptomhj446TCtTqodUAzNaxrk=
-github.com/go-trellis/config v1.4.1/go.mod h1:0VsGc7D6ezOrlTI7xNR6VcQRko7+5+ENRmN1N9kD6fs=
 github.com/google/uuid v1.1.1/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
 github.com/leodido/go-urn v1.2.0/go.mod h1:+8+nEpDfqqsY+g338gtMEUOtuK+4dEMhiQEgxpxOKII=
 github.com/mattn/go-colorable v0.1.4/go.mod h1:U0ppj6V5qS13XJ6of8GYAs25YV2eR4EVcfRqFIhoBtE=

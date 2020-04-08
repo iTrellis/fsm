@@ -2,4 +2,4 @@ module github.com/go-trellis/fsm
 
 go 1.13
 
-require github.com/go-trellis/config v1.3.5
+require github.com/go-trellis/config v1.4.1
