@@ -23,9 +23,10 @@ type AdapterConfig struct {
 	ConfigString string
 
 	readerType ReaderType
-	reader     Reader
-	locker     sync.RWMutex
-	configs    map[string]interface{}
+
+	reader  Reader
+	locker  sync.RWMutex
+	configs map[string]interface{}
 }
 
 // NewAdapterConfig return default config adapter
@@ -50,6 +51,10 @@ func NewAdapterConfig(filepath string) (Config, error) {
 func (p *AdapterConfig) init(opts ...Option) (err error) {
 	for i := 0; i < len(opts); i++ {
 		opts[i](p)
+	}
+
+	if _, err = filesRepo.FileInfo(p.ConfigFile); err != nil {
+		return
 	}
 
 	if len(p.ConfigFile) > 0 {
@@ -355,7 +360,7 @@ func (p *AdapterConfig) GetValuesConfig(key string) Config {
 		return nil
 	}
 
-	return MapGetter().GenMapConfig(p.readerType, opt)
+	return MapGetter(p.readerType).GenMapConfig(opt)
 }
 
 func (p *AdapterConfig) getKeyValue(key string) (vm interface{}, err error) {

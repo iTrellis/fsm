@@ -38,7 +38,11 @@ func (*defXMLReader) Dump(v interface{}) ([]byte, error) {
 
 // ReadXMLFile 读取yaml文件的配置信息
 func ReadXMLFile(name string) ([]byte, error) {
-	return readFile(name)
+	data, _, err := filesRepo.Read(name)
+	if err != nil {
+		return nil, err
+	}
+	return data, nil
 }
 
 // ParseXMLConfig 解析yaml的配置信息

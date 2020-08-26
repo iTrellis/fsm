@@ -3,10 +3,14 @@
 
 package config
 
-import "io/ioutil"
+import (
+	"github.com/go-trellis/common/files"
+)
 
 // ReaderType define reader type
 type ReaderType int
+
+var filesRepo = files.New()
 
 const (
 	// ReaderTypeSuffix judge by file suffix
@@ -39,10 +43,6 @@ func NewReader(rt ReaderType) Reader {
 	default:
 		return NewSuffixReader()
 	}
-}
-
-func readFile(name string) ([]byte, error) {
-	return ioutil.ReadFile(name)
 }
 
 /*

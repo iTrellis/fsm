@@ -1,5 +1,19 @@
-// GNU GPL v3 License
-// Copyright (c) 2016 github.com:go-trellis
+/*
+Copyright © 2020 Henry Huang <hhh@rutcode.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program. If not, see <http://www.gnu.org/licenses/>.
+*/
 
 package formats
 
@@ -69,4 +83,48 @@ func HideString(origin string, start, length int) string {
 		return string(rs[0:start]) + strings.Repeat("*", lenRs-start)
 	}
 	return origin
+}
+
+// RemoveDuplicateStringByMap remove duplicate string by map whether a string is already exist.
+func RemoveDuplicateStringByMap(ss []string) []string {
+	var result []string
+	mapSS := make(map[string]bool, len(ss))
+	for _, s := range ss {
+		if mapSS[s] {
+			continue
+		}
+		mapSS[s] = true
+		result = append(result, s)
+	}
+	return result
+}
+
+// StringInSlice a string in haystack
+func StringInSlice(needle string, haystack []string) bool {
+	for _, hay := range haystack {
+		if hay == needle {
+			return true
+		}
+	}
+	return false
+}
+
+// SuffixStringInSlice a string starts with a short string in haystack
+func SuffixStringInSlice(needle string, haystack []string) bool {
+	for _, h := range haystack {
+		if strings.HasSuffix(needle, h) {
+			return true
+		}
+	}
+	return false
+}
+
+// StringContainedInSlice a string contains a short string in haystack
+func StringContainedInSlice(needle string, haystack []string) bool {
+	for _, h := range haystack {
+		if strings.Contains(needle, h) {
+			return true
+		}
+	}
+	return false
 }

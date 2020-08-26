@@ -39,7 +39,11 @@ func (*defYamlReader) Dump(v interface{}) ([]byte, error) {
 
 // ReadYAMLFile 读取yaml文件的配置信息
 func ReadYAMLFile(name string) ([]byte, error) {
-	return readFile(name)
+	data, _, err := filesRepo.Read(name)
+	if err != nil {
+		return nil, err
+	}
+	return data, nil
 }
 
 // ParseYAMLConfig 解析yaml的配置信息

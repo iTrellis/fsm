@@ -28,17 +28,20 @@ type MapValueGetter interface {
 	GetMapKeyValueBoolList(ms interface{}, key string) ([]bool, error)
 	GetMapKeyValueTimeDuration(ms interface{}, key string) (time.Duration, error)
 
-	GenMapConfig(rt ReaderType, ms map[string]interface{}) Config
+	GenMapConfig(ms map[string]interface{}) Config
 }
 
-var defaultGetter = MapGetter()
+// DefaultGetter default options getter
+var DefaultGetter = MapGetter(ReaderTypeYAML)
 
 // MapGetter get map value getter
-func MapGetter() MapValueGetter {
-	return (*getter)(nil)
+func MapGetter(rt ReaderType) MapValueGetter {
+	return &getter{readerType: rt}
 }
 
-type getter struct{}
+type getter struct {
+	readerType ReaderType
+}
 
 // GetMapKeyValue get value from map[interface{} | string] interface{}
 func (*getter) GetMapKeyValue(ms interface{}, key string) (interface{}, error) {
@@ -122,10 +125,9 @@ func (p *getter) GetMapKeyValueTimeDuration(ms interface{}, key string) (time.Du
 	return formats.ParseStringTime(s, 0), nil
 }
 
-func (*getter) GenMapConfig(rt ReaderType, ms map[string]interface{}) Config {
-
-	c := &AdapterConfig{readerType: rt, reader: nil, configs: ms}
-	switch rt {
+func (p *getter) GenMapConfig(ms map[string]interface{}) Config {
+	c := &AdapterConfig{readerType: p.readerType, reader: nil, configs: ms}
+	switch c.readerType {
 	case ReaderTypeJSON:
 		c.reader = NewJSONReader()
 	case ReaderTypeYAML:

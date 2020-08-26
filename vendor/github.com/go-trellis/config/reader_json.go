@@ -36,7 +36,7 @@ func (*defJSONReader) Dump(v interface{}) ([]byte, error) {
 
 // ReadJSONFile 读取Json文件数据到Models
 func ReadJSONFile(name string, model interface{}) error {
-	data, err := readFile(name)
+	data, _, err := filesRepo.Read(name)
 	if err != nil {
 		return err
 	}
