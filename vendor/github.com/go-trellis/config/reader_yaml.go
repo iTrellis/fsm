@@ -4,29 +4,24 @@
 package config
 
 import (
-	"sync"
-
 	"gopkg.in/yaml.v2"
 )
 
 type defYamlReader struct {
-	mu sync.Mutex
+	opts ReaderOptions
 }
-
-var yamlReader = &defYamlReader{}
 
 // NewYAMLReader return a yaml reader
-func NewYAMLReader() Reader {
-	return yamlReader
+func NewYAMLReader(opts ...ReaderOptionFunc) Reader {
+	r := &defYamlReader{}
+	for _, o := range opts {
+		o(&r.opts)
+	}
+	return r
 }
 
-func (p *defYamlReader) Read(name string, model interface{}) error {
-	if len(name) == 0 {
-		return ErrInvalidFilePath
-	}
-	p.mu.Lock()
-	defer p.mu.Unlock()
-	data, err := ReadYAMLFile(name)
+func (p *defYamlReader) Read(model interface{}) error {
+	data, err := ReadYAMLFile(p.opts.filename)
 	if err != nil {
 		return err
 	}
@@ -35,6 +30,10 @@ func (p *defYamlReader) Read(name string, model interface{}) error {
 
 func (*defYamlReader) Dump(v interface{}) ([]byte, error) {
 	return yaml.Marshal(v)
+}
+
+func (*defYamlReader) ParseData(data []byte, model interface{}) error {
+	return ParseYAMLConfig(data, model)
 }
 
 // ReadYAMLFile 读取yaml文件的配置信息

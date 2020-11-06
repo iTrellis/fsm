@@ -4,6 +4,7 @@
 package config
 
 import (
+	"encoding/json"
 	"math/big"
 	"reflect"
 	"strings"
@@ -11,6 +12,7 @@ import (
 	"time"
 
 	"github.com/go-trellis/common/formats"
+	"gopkg.in/yaml.v2"
 )
 
 const (
@@ -21,6 +23,9 @@ const (
 type AdapterConfig struct {
 	ConfigFile   string
 	ConfigString string
+	ConfigStruct interface{}
+
+	data []byte
 
 	readerType ReaderType
 
@@ -48,51 +53,46 @@ func NewAdapterConfig(filepath string) (Config, error) {
 	return a.copy(), nil
 }
 
-func (p *AdapterConfig) init(opts ...Option) (err error) {
+func (p *AdapterConfig) init(opts ...OptionFunc) (err error) {
 	for i := 0; i < len(opts); i++ {
 		opts[i](p)
 	}
 
-	if _, err = filesRepo.FileInfo(p.ConfigFile); err != nil {
-		return
-	}
-
 	if len(p.ConfigFile) > 0 {
-		p.readerType = fileToReaderType(p.ConfigFile)
-		switch p.readerType {
-		case ReaderTypeJSON:
-			p.reader = NewJSONReader()
-		case ReaderTypeYAML:
-			p.reader = NewYAMLReader()
-		default:
-			return ErrNotSupportedReaderType
-		}
 
-		err = p.reader.Read(p.ConfigFile, &p.configs)
+		p.readerType = fileToReaderType(p.ConfigFile)
+
+		p.data, _, err = filesRepo.Read(p.ConfigFile)
+		if err != nil {
+			return
+		}
 	}
-	if err != nil {
-		return ErrValueNil
+
+	switch p.readerType {
+	case ReaderTypeJSON:
+		p.reader = NewJSONReader(ReaderOptionFilename(p.ConfigFile))
+	case ReaderTypeYAML:
+		p.reader = NewYAMLReader(ReaderOptionFilename(p.ConfigFile))
+	default:
+		return ErrNotSupportedReaderType
 	}
 
 	if len(p.ConfigString) > 0 {
-		switch p.readerType {
-		case ReaderTypeJSON:
-			p.reader = NewJSONReader()
-			err = ParseJSONConfig([]byte(p.ConfigString), &p.configs)
-		case ReaderTypeYAML:
-			p.reader = NewYAMLReader()
-			err = ParseYAMLConfig([]byte(p.ConfigString), &p.configs)
-		default:
-			return ErrNotSupportedReaderType
+		p.data = []byte(p.ConfigString)
+	}
+
+	if p.ConfigStruct != nil {
+		p.data, err = p.reader.Dump(p.ConfigStruct)
+		if err != nil {
+			return err
 		}
 	}
-	if err != nil {
-		return ErrValueNil
+
+	if err = p.reader.ParseData(p.data, &p.configs); err != nil {
+		return
 	}
 
-	err = p.copyDollarSymbol()
-
-	return
+	return p.copyDollarSymbol()
 }
 
 // GetKeys get map keys
@@ -117,6 +117,7 @@ func (p *AdapterConfig) copy() *AdapterConfig {
 	return &AdapterConfig{
 		ConfigFile:   p.ConfigFile,
 		ConfigString: p.ConfigString,
+		ConfigStruct: p.ConfigStruct,
 		readerType:   p.readerType,
 		reader:       p.reader,
 		configs:      valuesMap,
@@ -186,11 +187,11 @@ func (p *AdapterConfig) GetBoolean(key string, defValue ...bool) (b bool) {
 	}()
 	v := p.GetInterface(key, defValue)
 
-	switch reflect.TypeOf(v).String() {
-	case "bool":
+	switch reflect.TypeOf(v).Kind() {
+	case reflect.Bool:
 		ok, b = true, v.(bool)
-	case "string":
-		ok, b = true, (v.(string) == "ON" || v.(string) == "on")
+	case reflect.String:
+		ok, b = true, strings.ToLower(v.(string)) == "on"
 	}
 
 	return
@@ -319,22 +320,22 @@ func (p *AdapterConfig) GetMap(key string) Options {
 		return nil
 	}
 
-	mapVM, ok := vm.(map[string]interface{})
-	if ok {
-		return mapVM
-	}
-
-	mapVMs, ok := vm.(map[interface{}]interface{})
-	if !ok {
+	switch t := vm.(type) {
+	case map[string]interface{}:
+		return t
+	case map[interface{}]interface{}:
+		result := make(map[string]interface{})
+		for k, v := range t {
+			sk, ok := k.(string)
+			if !ok {
+				continue
+			}
+			result[sk] = v
+		}
+		return result
+	default:
 		return nil
 	}
-
-	result := make(map[string]interface{})
-	for k, v := range mapVMs {
-		sk, _ := k.(string)
-		result[sk] = v
-	}
-	return result
 }
 
 // GetConfig return object config in p.configs by key
@@ -353,31 +354,38 @@ func (p *AdapterConfig) GetConfig(key string) Config {
 	return c
 }
 
-// GetValuesConfig get key's values if values can be Config, or panic
-func (p *AdapterConfig) GetValuesConfig(key string) Config {
-	opt := p.GetMap(key)
-	if opt == nil {
+// ToObject unmarshal values to object
+func (p *AdapterConfig) ToObject(key string, model interface{}) error {
+	vm, err := p.getKeyValue(key)
+	if err != nil {
 		return nil
 	}
 
-	return MapGetter(p.readerType).GenMapConfig(opt)
+	switch p.readerType {
+	case ReaderTypeJSON:
+		bs, _ := json.Marshal(vm)
+		err = json.Unmarshal(bs, model)
+	case ReaderTypeYAML:
+		bs, _ := yaml.Marshal(vm)
+		err = yaml.Unmarshal(bs, model)
+	}
+	return err
 }
 
-func (p *AdapterConfig) getKeyValue(key string) (vm interface{}, err error) {
+// GetValuesConfig get key's values if values can be Config, or panic
+func (p *AdapterConfig) GetValuesConfig(key string) Config {
+	opt := p.GetMap(key)
+	return opt.ToConfig(p.readerType)
+}
+
+// GetKeyValue get value with key
+func (p *AdapterConfig) GetKeyValue(key string) (vm interface{}, err error) {
 	if len(key) == 0 {
 		return nil, ErrInvalidKey
 	}
 	p.locker.RLock()
 	defer p.locker.RUnlock()
-
-	switch p.readerType {
-	case ReaderTypeJSON:
-		return getStringKeyValue(p.configs, key)
-	case ReaderTypeYAML:
-		return getInterfaceKeyValue(p.configs, key)
-	default:
-		return nil, ErrNotSupportedReaderType
-	}
+	return p.getKeyValue(key)
 }
 
 // SetKeyValue set key value into p.configs
@@ -387,15 +395,7 @@ func (p *AdapterConfig) SetKeyValue(key string, value interface{}) (err error) {
 	}
 	p.locker.Lock()
 	defer p.locker.Unlock()
-
-	switch p.readerType {
-	case ReaderTypeJSON:
-		return setStringKeyValue(&p.configs, key, value)
-	case ReaderTypeYAML:
-		return setInterfaceKeyValue(&p.configs, key, value)
-	default:
-		return ErrNotSupportedReaderType
-	}
+	return p.setKeyValue(key, value)
 }
 
 // Dump return p.configs' bytes
@@ -417,9 +417,9 @@ func (p *AdapterConfig) copyDollarSymbol() error {
 
 	switch p.readerType {
 	case ReaderTypeJSON:
-		return copyJSONDollarSymbol(&p.configs, "", &p.configs)
+		return p.copyJSONDollarSymbol("", &p.configs)
 	case ReaderTypeYAML:
-		return copyYAMLDollarSymbol(&p.configs)
+		return p.copyYAMLDollarSymbol(&p.configs)
 	}
 
 	return nil

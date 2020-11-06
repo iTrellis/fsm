@@ -1,7 +1,0 @@
-language: go
-
-install:
-  - go get github.com/go-trellis/fsm
-
-script:
-  - go test -v ./...

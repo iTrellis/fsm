@@ -1,7 +1,7 @@
-# github.com/go-trellis/common v1.8.2
+# github.com/go-trellis/common v1.8.3
 github.com/go-trellis/common/files
 github.com/go-trellis/common/formats
-# github.com/go-trellis/config v1.4.6
+# github.com/go-trellis/config v1.5.0
 github.com/go-trellis/config
 # golang.org/x/text v0.3.3
 golang.org/x/text/encoding

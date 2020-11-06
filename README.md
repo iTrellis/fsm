@@ -1,7 +1,6 @@
 # fsm
 Finite-state machine in go
 
-* [![Build Status](https://travis-ci.org/go-trellis/fsm.png)](https://travis-ci.org/go-trellis/fsm)
 * [![GoDoc](http://godoc.org/github.com/go-trellis/fsm?status.svg)](http://godoc.org/github.com/go-trellis/fsm)
 
 ## Introduction

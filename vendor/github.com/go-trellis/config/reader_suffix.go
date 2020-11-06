@@ -5,62 +5,57 @@ package config
 
 import (
 	"strings"
-	"sync"
 )
 
 type defSuffixReader struct {
-	mu sync.Mutex
-
-	name string
+	opts   ReaderOptions
+	reader Reader
 }
 
 // NewSuffixReader return a suffix reader
 // supportted: .json, .xml, .yaml, .yml
-func NewSuffixReader() Reader {
-	return &defSuffixReader{}
-}
+func NewSuffixReader(opts ...ReaderOptionFunc) (reader Reader, err error) {
+	r := &defSuffixReader{}
 
-func (p *defSuffixReader) Read(name string, model interface{}) error {
-	if len(name) == 0 {
-		return ErrInvalidFilePath
+	for _, o := range opts {
+		o(&r.opts)
 	}
 
-	p.mu.Lock()
-	defer p.mu.Unlock()
-
-	p.name = name
-
-	switch {
-	case strings.HasSuffix(p.name, ".json"):
-		return jsonReader.Read(p.name, model)
-	case strings.HasSuffix(p.name, ".xml"):
-		return xmlReader.Read(p.name, model)
-	case strings.HasSuffix(p.name, ".yml"),
-		strings.HasSuffix(p.name, ".yaml"):
-		return yamlReader.Read(p.name, model)
-	default:
-		return ErrUnknownSuffixes
-	}
-}
-
-func (p *defSuffixReader) Dump(v interface{}) ([]byte, error) {
-	if p.name == "" {
+	if r.opts.filename == "" {
 		return nil, ErrInvalidFilePath
 	}
 
-	p.mu.Lock()
-	defer p.mu.Unlock()
-
-	switch fileToReaderType(p.name) {
-	case ReaderTypeJSON:
-		return jsonReader.Dump(v)
-	case ReaderTypeXML:
-		return xmlReader.Dump(v)
-	case ReaderTypeYAML:
-		return yamlReader.Dump(v)
+	r.reader, err = fileToReader(r.opts.filename)
+	if err != nil {
+		return
 	}
+	return r, nil
+}
 
-	return nil, ErrUnknownSuffixes
+func (p *defSuffixReader) Read(model interface{}) (err error) {
+	return p.reader.Read(model)
+}
+
+func (p *defSuffixReader) Dump(v interface{}) ([]byte, error) {
+	return p.reader.Dump(v)
+}
+
+func (p *defSuffixReader) ParseData(data []byte, model interface{}) error {
+	return p.reader.ParseData(data, model)
+}
+
+func fileToReader(filename string) (Reader, error) {
+	switch {
+	case strings.HasSuffix(filename, ".json"):
+		return NewJSONReader(ReaderOptionFilename(filename)), nil
+	case strings.HasSuffix(filename, ".xml"):
+		return NewXMLReader(ReaderOptionFilename(filename)), nil
+	case strings.HasSuffix(filename, ".yml"),
+		strings.HasSuffix(filename, ".yaml"):
+		return NewYAMLReader(ReaderOptionFilename(filename)), nil
+	default:
+		return nil, ErrUnknownSuffixes
+	}
 }
 
 func fileToReaderType(name string) ReaderType {
@@ -72,7 +67,7 @@ func fileToReaderType(name string) ReaderType {
 	case strings.HasSuffix(name, ".yml"),
 		strings.HasSuffix(name, ".yaml"):
 		return ReaderTypeYAML
+	default:
+		return ReaderTypeSuffix
 	}
-
-	return ReaderTypeSuffix
 }

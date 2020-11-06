@@ -10,7 +10,7 @@ import (
 	"github.com/go-trellis/common/formats"
 )
 
-func copyJSONDollarSymbol(configs *map[string]interface{}, key string, maps *map[string]interface{}) error {
+func (p *AdapterConfig) copyJSONDollarSymbol(key string, maps *map[string]interface{}) error {
 	tokens := []string{}
 	if key != "" {
 		tokens = append(tokens, key)
@@ -27,7 +27,7 @@ func copyJSONDollarSymbol(configs *map[string]interface{}, key string, maps *map
 				if !ok {
 					continue
 				}
-				err := copyJSONDollarSymbol(configs, strings.Join(keys, "."), &vm)
+				err := p.copyJSONDollarSymbol(strings.Join(keys, "."), &vm)
 				if err != nil {
 					return err
 				}
@@ -42,11 +42,12 @@ func copyJSONDollarSymbol(configs *map[string]interface{}, key string, maps *map
 				if !matched {
 					continue
 				}
-				vm, e := getStringKeyValue(*configs, s[2:len(s)-1])
-				if e != nil {
-					return e
+
+				vm, err := p.getKeyValue(s[2 : len(s)-1])
+				if err != nil {
+					return err
 				}
-				err := setStringKeyValue(configs, strings.Join(keys, "."), vm)
+				err = p.setKeyValue(strings.Join(keys, "."), vm)
 				if err != nil {
 					return err
 				}
@@ -56,7 +57,7 @@ func copyJSONDollarSymbol(configs *map[string]interface{}, key string, maps *map
 	return nil
 }
 
-func copyYAMLDollarSymbol(configs *map[string]interface{}) error {
+func (p *AdapterConfig) copyYAMLDollarSymbol(configs *map[string]interface{}) error {
 
 	for k, v := range *configs {
 		if v == nil {
@@ -69,7 +70,7 @@ func copyYAMLDollarSymbol(configs *map[string]interface{}) error {
 				if !ok {
 					continue
 				}
-				if err := copyMap(configs, k, &vm); err != nil {
+				if err := p.copyMap(k, &vm); err != nil {
 					return err
 				}
 			}
@@ -82,11 +83,11 @@ func copyYAMLDollarSymbol(configs *map[string]interface{}) error {
 				if _, matched := formats.FindStringSubmatchMap(s, includeReg); !matched {
 					continue
 				}
-				vm, e := getInterfaceKeyValue(*configs, s[2:len(s)-1])
-				if e != nil {
-					return e
+				vm, err := p.getKeyValue(s[2 : len(s)-1])
+				if err != nil {
+					return err
 				}
-				err := setInterfaceKeyValue(configs, k, vm)
+				err = p.setKeyValue(k, vm)
 				if err != nil {
 					return err
 				}
@@ -96,7 +97,7 @@ func copyYAMLDollarSymbol(configs *map[string]interface{}) error {
 	return nil
 }
 
-func copyMap(configs *map[string]interface{}, key string, maps *map[interface{}]interface{}) error {
+func (p *AdapterConfig) copyMap(key string, maps *map[interface{}]interface{}) error {
 	tokens := []string{}
 	if key != "" {
 		tokens = append(tokens, key)
@@ -114,11 +115,11 @@ func copyMap(configs *map[string]interface{}, key string, maps *map[interface{}]
 				if !ok {
 					continue
 				}
-				err := copyMap(configs, strings.Join(keys, "."), &vm)
+				err := p.copyMap(strings.Join(keys, "."), &vm)
 				if err != nil {
 					return err
 				}
-				err = setInterfaceKeyValue(configs, strings.Join(keys, "."), vm)
+				err = p.setKeyValue(strings.Join(keys, "."), vm)
 				if err != nil {
 					return err
 				}
@@ -132,11 +133,11 @@ func copyMap(configs *map[string]interface{}, key string, maps *map[interface{}]
 				if _, matched := formats.FindStringSubmatchMap(s, includeReg); !matched {
 					continue
 				}
-				vm, e := getInterfaceKeyValue(*configs, s[2:len(s)-1])
+				vm, e := p.getKeyValue(s[2 : len(s)-1])
 				if e != nil {
 					continue
 				}
-				err := setInterfaceKeyValue(configs, strings.Join(keys, "."), vm)
+				err := p.setKeyValue(strings.Join(keys, "."), vm)
 				if err != nil {
 					return err
 				}
@@ -146,19 +147,24 @@ func copyMap(configs *map[string]interface{}, key string, maps *map[interface{}]
 	return nil
 }
 
-func getInterfaceKeyValue(configs map[string]interface{}, key string) (vm interface{}, err error) {
+func (p *AdapterConfig) getKeyValue(key string) (vm interface{}, err error) {
 
 	tokens := strings.Split(key, ".")
-	vm = configs[tokens[0]]
+	vm = p.configs[tokens[0]]
 	for i, t := range tokens {
 		if i == 0 {
 			continue
 		}
-		v, ok := vm.(map[interface{}]interface{})
-		if !ok {
+
+		switch v := vm.(type) {
+		case map[string]interface{}:
+			vm = v[t]
+		case map[interface{}]interface{}:
+			vm = v[t]
+		default:
 			return nil, ErrNotMap
 		}
-		vm = v[t]
+
 	}
 	if vm == nil {
 		err = ErrValueNil
@@ -166,63 +172,25 @@ func getInterfaceKeyValue(configs map[string]interface{}, key string) (vm interf
 	return
 }
 
-// setInterfaceKeyValue set key value into *configs
-func setInterfaceKeyValue(configs *map[string]interface{}, key string, value interface{}) (err error) {
+// setKeyValue set key value into *configs
+func (p *AdapterConfig) setKeyValue(key string, value interface{}) (err error) {
 	tokens := strings.Split(key, ".")
 	for i := len(tokens) - 1; i >= 0; i-- {
 		if i == 0 {
-			(*configs)[tokens[0]] = value
+			p.configs[tokens[0]] = value
 			return
 		}
-		v, _ := getInterfaceKeyValue(*configs, strings.Join(tokens[:i], "."))
-		vm, ok := v.(map[interface{}]interface{})
-		if !ok {
-			value = map[interface{}]interface{}{tokens[i]: value}
-			continue
-		}
-		vm[tokens[i]] = value
-		value = vm
-	}
-	return
-}
-
-func getStringKeyValue(configs map[string]interface{}, key string) (vm interface{}, err error) {
-
-	tokens := strings.Split(key, ".")
-	vm = configs[tokens[0]]
-	for i, t := range tokens {
-		if i != 0 {
-			v, ok := vm.(map[string]interface{})
-			if !ok {
-				return nil, ErrNotMap
-			}
-			vm = v[t]
-		}
-	}
-
-	if vm == nil {
-		err = ErrValueNil
-	}
-
-	return
-}
-
-// setStringKeyValue set key value into configs
-func setStringKeyValue(configs *map[string]interface{}, key string, value interface{}) (err error) {
-	tokens := strings.Split(key, ".")
-	for i := len(tokens) - 1; i >= 0; i-- {
-		if i == 0 {
-			(*configs)[tokens[i]] = value
-			return
-		}
-		v, _ := getStringKeyValue(*configs, strings.Join(tokens[:i], "."))
-		vm, ok := v.(map[string]interface{})
-		if !ok {
+		v, _ := p.getKeyValue(strings.Join(tokens[:i], "."))
+		switch vm := v.(type) {
+		case map[string]interface{}:
+			vm[tokens[i]] = value
+			value = vm
+		case map[interface{}]interface{}:
+			vm[tokens[i]] = value
+			value = vm
+		default:
 			value = map[string]interface{}{tokens[i]: value}
-			continue
 		}
-		vm[tokens[i]] = value
-		value = vm
 	}
 	return
 }

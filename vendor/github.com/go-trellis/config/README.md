@@ -88,34 +88,39 @@ type Config interface {
 // Reader reader repo
 type Reader interface {
 	// read file into model
-	Read(path string, model interface{}) error
+	Read(model interface{}) error
 	// dump configs' cache
 	Dump(model interface{}) ([]byte, error)
+	// parse data to model
+	ParseData(data []byte, model interface{}) error
 }
 ```
 
 ```go
-r := NewReader(ReaderType)
-if err := r.Read(filename, model); err != nil {
+r := NewReader(ReaderType, filename)
+if err := r.Read(model); err != nil {
 	return
 }
 ```
 
 ### Readers
 
-
 ```go
-jReader := NewJSONReader()
-xReader := NewXMLReader()
-yReader := NewYAMLReader()
+jReader := NewJSONReader() or NewJSONReader(ReaderOptionFilename(filename))
+xReader := NewXMLReader()  or NewXMLReader(ReaderOptionFilename(filename))
+yReader := NewYAMLReader() or NewYAMLReader(ReaderOptionFilename(filename))
 ```
 
-* if you want to judge reader by file's suffix
 
-```go
-sReader := NewSuffixReader()
-```
+> if not set filename with reader option function, you can't use Read function, it will return: no such file or directory
 
-* .json = NewJSONReader()
+* .json = NewJSONReader() 
 * .xml = NewXMLReader()
 * .yaml | .yml = NewYAMLReader()
+
+* if you want to use a fuzzy reader by filename's suffix
+
+```go
+sReader := NewSuffixReader(ReaderOptionFilename(filename))
+```
+

@@ -8,21 +8,29 @@ import (
 	"time"
 )
 
-// Option 处理函数
-type Option func(*AdapterConfig)
+// OptionFunc 处理函数
+type OptionFunc func(*AdapterConfig)
 
 // OptionFile 解析配置文件Option函数
-func OptionFile(name string) Option {
+func OptionFile(filename string) OptionFunc {
 	return func(c *AdapterConfig) {
-		c.ConfigFile = name
+		c.ConfigFile = filename
 	}
 }
 
 // OptionString 字符串解析配置Option函数
-func OptionString(rt ReaderType, name string) Option {
+func OptionString(rt ReaderType, cStr string) OptionFunc {
 	return func(c *AdapterConfig) {
 		c.readerType = rt
-		c.ConfigString = name
+		c.ConfigString = cStr
+	}
+}
+
+// OptionStruct 结构体解析配置Option函数
+func OptionStruct(rt ReaderType, st interface{}) OptionFunc {
+	return func(c *AdapterConfig) {
+		c.readerType = rt
+		c.ConfigStruct = st
 	}
 }
 
@@ -56,6 +64,8 @@ type Config interface {
 	GetMap(key string) Options
 	// get key's config
 	GetConfig(key string) Config
+	// ToObject unmarshal values to object
+	ToObject(key string, model interface{}) error
 	// get key's values if values can be Config, or panic
 	GetValuesConfig(key string) Config
 	// set key's value into config
@@ -77,7 +87,7 @@ func NewConfig(name string) (Config, error) {
 }
 
 // NewConfigOptions 从操作函数解析Config
-func NewConfigOptions(opts ...Option) (Config, error) {
+func NewConfigOptions(opts ...OptionFunc) (Config, error) {
 	c := &AdapterConfig{}
 	err := c.init(opts...)
 	if err != nil {

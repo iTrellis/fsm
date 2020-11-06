@@ -5,27 +5,23 @@ package config
 
 import (
 	"encoding/xml"
-	"sync"
 )
 
 type defXMLReader struct {
-	mu sync.Mutex
+	opts ReaderOptions
 }
-
-var xmlReader = &defXMLReader{}
 
 // NewXMLReader return xml config reader
-func NewXMLReader() Reader {
-	return xmlReader
+func NewXMLReader(opts ...ReaderOptionFunc) Reader {
+	r := &defXMLReader{}
+	for _, o := range opts {
+		o(&r.opts)
+	}
+	return r
 }
 
-func (p *defXMLReader) Read(name string, model interface{}) error {
-	if name == "" {
-		return ErrInvalidFilePath
-	}
-	p.mu.Lock()
-	defer p.mu.Unlock()
-	data, err := ReadXMLFile(name)
+func (p *defXMLReader) Read(model interface{}) error {
+	data, err := ReadXMLFile(p.opts.filename)
 	if err != nil {
 		return err
 	}
@@ -34,6 +30,10 @@ func (p *defXMLReader) Read(name string, model interface{}) error {
 
 func (*defXMLReader) Dump(v interface{}) ([]byte, error) {
 	return xml.Marshal(v)
+}
+
+func (*defXMLReader) ParseData(data []byte, model interface{}) error {
+	return ParseXMLConfig(data, model)
 }
 
 // ReadXMLFile 读取yaml文件的配置信息

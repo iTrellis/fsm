@@ -9,7 +9,7 @@ import (
 
 // Errors
 var (
-	ErrNotMap                 = errors.New("interface not map")
+	ErrNotMap                 = errors.New("interface is not a map")
 	ErrValueNil               = errors.New("value is nil")
 	ErrInvalidKey             = errors.New("invalid key")
 	ErrInvalidFilePath        = errors.New("invalid file path")
