@@ -1,9 +1,9 @@
-# github.com/go-trellis/common v1.8.3
+# github.com/go-trellis/common v0.0.0-20201109093531-dd6cf5c3eb27
 github.com/go-trellis/common/files
 github.com/go-trellis/common/formats
-# github.com/go-trellis/config v1.5.0
+# github.com/go-trellis/config v0.0.0-20201109094531-d08a44a0456a
 github.com/go-trellis/config
-# golang.org/x/text v0.3.3
+# golang.org/x/text v0.3.4
 golang.org/x/text/encoding
 golang.org/x/text/encoding/internal
 golang.org/x/text/encoding/internal/identifier
