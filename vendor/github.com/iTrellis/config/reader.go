@@ -1,10 +1,10 @@
 // GNU GPL v3 License
-// Copyright (c) 2017 github.com:go-trellis
+// Copyright (c) 2017 github.com:iTrellis
 
 package config
 
 import (
-	"github.com/go-trellis/common/files"
+	"github.com/iTrellis/common/files"
 )
 
 // ReaderType define reader type

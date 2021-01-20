@@ -1,13 +1,13 @@
-# github.com/go-trellis/common v0.0.0-20201109093531-dd6cf5c3eb27
-github.com/go-trellis/common/files
-github.com/go-trellis/common/formats
-# github.com/go-trellis/config v0.0.0-20201109094531-d08a44a0456a
-github.com/go-trellis/config
-# golang.org/x/text v0.3.4
+# github.com/iTrellis/common v0.20.0
+github.com/iTrellis/common/files
+github.com/iTrellis/common/formats
+# github.com/iTrellis/config v0.20.0
+github.com/iTrellis/config
+# golang.org/x/text v0.3.5
 golang.org/x/text/encoding
 golang.org/x/text/encoding/internal
 golang.org/x/text/encoding/internal/identifier
 golang.org/x/text/encoding/simplifiedchinese
 golang.org/x/text/transform
-# gopkg.in/yaml.v2 v2.3.0
+# gopkg.in/yaml.v2 v2.4.0
 gopkg.in/yaml.v2

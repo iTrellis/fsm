@@ -1,7 +1,7 @@
 # fsm
 Finite-state machine in go
 
-* [![GoDoc](http://godoc.org/github.com/go-trellis/fsm?status.svg)](http://godoc.org/github.com/go-trellis/fsm)
+* [![GoDoc](http://godoc.org/github.com/iTrellis/fsm?status.svg)](http://godoc.org/github.com/iTrellis/fsm)
 
 ## Introduction
 
@@ -11,7 +11,7 @@ Finite-state machine in go
 ## Installation
 
 ```go
-go get -u github.com/go-trellis/fsm
+go get -u github.com/iTrellis/fsm
 ```
 
 ## Usage

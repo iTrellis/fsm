@@ -1,5 +1,5 @@
-module github.com/go-trellis/fsm
+module github.com/iTrellis/fsm
 
 go 1.13
 
-require github.com/go-trellis/config v0.0.0-20201109094531-d08a44a0456a
+require github.com/iTrellis/config v0.20.0

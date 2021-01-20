@@ -5,7 +5,7 @@ Go package for reading cofig file by JSON, XML, YAML.
 ## Installation
 
 ```bash
-go get github.com/go-trellis/config
+go get github.com/iTrellis/config
 ```
 
 ### imports

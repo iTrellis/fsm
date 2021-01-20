@@ -18,7 +18,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 package fsm
 
 import (
-	"github.com/go-trellis/config"
+	"github.com/iTrellis/config"
 )
 
 // NewTransactionFromConfig new transactions from config file
