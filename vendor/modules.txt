@@ -1,7 +1,7 @@
-# github.com/iTrellis/common v0.20.0
+# github.com/iTrellis/common v0.21.1
 github.com/iTrellis/common/files
 github.com/iTrellis/common/formats
-# github.com/iTrellis/config v0.20.0
+# github.com/iTrellis/config v0.21.1
 github.com/iTrellis/config
 # golang.org/x/text v0.3.5
 golang.org/x/text/encoding
