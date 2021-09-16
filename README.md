@@ -1,4 +1,7 @@
 # fsm
+
+Achieve this repo, move it into [github.com/iTellis/common](github.com/iTellis/common)
+
 Finite-state machine in go
 
 * [![GoDoc](http://godoc.org/github.com/iTrellis/fsm?status.svg)](http://godoc.org/github.com/iTrellis/fsm)
@@ -11,7 +14,7 @@ Finite-state machine in go
 ## Installation
 
 ```go
-go get -u github.com/iTrellis/fsm
+go get -u github.com/iTrellis/common/fsm
 ```
 
 ## Usage
@@ -54,4 +57,4 @@ type FSMRepo interface {
 
 ## Config
 
-* [sample.conf](sample.conf)
+* [sample.yaml](sample.yaml)
